@@ -18,7 +18,7 @@ function handleIncomingRequest(req, res) {
       res.end(JSON.stringify(out) + "\n");
     }
   });
-  }
+}
 
 function loadAlbumList(callback) {
   fs.readdir('albums', function(err, files) {
@@ -26,7 +26,33 @@ function loadAlbumList(callback) {
       callback(err);
     }
     else {
-      callback(null, files);
+      // Only return entires that are folders, not files.
+      var only_dirs = [];
+
+      // Create a anonymoys recursive function that runs until all files from
+      // this directly have been processed, then execute the callback.
+      (function iterator(index) {
+        if (index == files.length) {
+          callback(null, only_dirs);
+          return;
+        }
+        else {
+          var entry = 'albums/' + files[index];
+          fs.stat(entry, function(err, stats) {
+            if (err) {
+              callback(err);
+            }
+            else {
+              if (stats.isDirectory()) {
+                only_dirs.push(files[index]);
+              }
+              // Increase the iterator and trigger the recursion.
+              iterator(index + 1);
+            }
+          })
+        }
+      })(0);
+
     }
   });
 }
