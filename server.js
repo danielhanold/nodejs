@@ -57,6 +57,17 @@ function serverStaticFile(file, res) {
     }
   });
 
+  // Add handler for error case, e.g. file not available.
+  rs.on('error', function() {
+    res.writeHead(404, {"Content-Type" : "application/json"});
+    var out = {
+      error: "not_found",
+      message: "'" + file + "' not found"
+    };
+    res.end(JSON.stringify(out) + "\n");
+    return;
+  });
+
   // When all content was read, end the ServerResponse response.
   rs.on('end', function() {
     res.end();
