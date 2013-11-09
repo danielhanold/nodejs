@@ -7,6 +7,7 @@
 
 var http = require('http');
 var fs = require('fs');
+var path = require('path');
 
 
 /**
@@ -79,7 +80,33 @@ function serverStaticFile(file, res) {
 * Determine the content type for a path.
 */
 function contentTypeForPath(file) {
-  return 'text/html';
+  var ext = path.extname(file);
+  var type;
+  switch (ext.toLowerCase()) {
+  case '.html':
+    type = 'text/html';
+    break;
+  case '.js':
+    type = 'text/javascript';
+    break;
+  case '.css':
+    type = 'text/css';
+    break;
+  case '.jpg':
+  case '.jpeg':
+    type = 'image/jpeg';
+    break;
+  case '.png':
+    type = 'image/png';
+    break;
+  default:
+    type = 'text/plain';
+    break;
+  }
+
+  console.log('File type detected: ' + type);
+
+  return type;
 }
 
 
